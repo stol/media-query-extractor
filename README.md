@@ -130,3 +130,11 @@ Usage: media-query-extractor [options] <input file> <output file>
         styles.css remaining.css
 ```
 
+```js
+var extractor = require('media-query-extractor');
+
+extractor( 'input.css', 'output.css', [
+    'screen and (min-width: 500px)|tablet.css',
+    'screen and (min-width: 990px)|desk.css'
+]);
+```
