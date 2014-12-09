@@ -4,7 +4,7 @@ var parse      = require('css-parse'),
     stringify  = require('css-stringify'),
     fs         = require('fs'),
     util       = require('util'),
-    minimist   = require('minimist'),
+    minimist   = require('minimist')
 ;
 
 // Parse command line arguments
@@ -15,13 +15,13 @@ if (argv.V || argv.version){
     process.exit(0);
 }
 
-if (argv.help || argv.h){
-    console.log('  Usage: media-query-extractor [options] <file>');
+if (argv.help || argv.h || !argv._[0] || !argv._[1]){
+    console.log('  Usage: media-query-extractor [options] <input file> <output file>');
     console.log('');
     console.log('  Options:');
     console.log('');
-    console.log('    -h, --help        output usage information');
-    console.log('    -V, --version     output the version number');
+    console.log('    -h, --help        Output usage information');
+    console.log('    -V, --version     Output the version number');
     console.log('    -b, --breakpoint  Add a breakpoint to be extracted. Model: --breakpoint "media query string[|output file name]"');
     console.log('');
     console.log('  Example:');
@@ -31,22 +31,29 @@ if (argv.help || argv.h){
     console.log('        --breakpoint "screen and (min-width: 480px)|tablet.css" \\');
     console.log('        --breakpoint "screen and (min-width: 660px)|big-tablet.css" \\');
     console.log('        --breakpoint "screen and (min-width: 990px)|desktop.css" \\');
-    console.log('        styles.css');
+    console.log('        styles.css remaining.css');
     console.log('');
     process.exit(0);
 }
 
 // Normalize breakpoints & output file names
+var outputFileName = argv._[1];
 var outputFiles = {
     'all': {
-        fileName: 'all.css',    
+        fileName: outputFileName,
         rules: []
     }
 };
-if (argv.breakpoint || argv.b){
-    for( var i=0; i<argv.breakpoint.length; i++) {
 
-        var parts = argv.breakpoint[i].split('|');
+var breakpoints = argv.breakpoint || argv.b;
+if (typeof breakpoints === "string"){
+    breakpoints = [breakpoints];
+}
+
+if (breakpoints){
+    for( var i=0; i<breakpoints.length; i++) {
+
+        var parts = breakpoints[i].split('|');
 
         if (parts.length === 2) {
             outputFiles[parts[0]] = {
@@ -89,11 +96,9 @@ for( var i=0; i<tree.stylesheet.rules.length; i++) {
     }
 }
 
-// Now that all the rules are grouped by media query, let's check if we have to
-// dispatch to different files
+// Dispatch rules to different files
 for (var mediaQuery in rulesByMediaQuery) {
-    // This media query doesn't need to be watched ? We should add this media
-    // query rules to global file
+
     if (!outputFiles[mediaQuery]){
         if (mediaQuery === 'all'){
             outputFiles['all'].rules.push.apply(outputFiles['all'].rules,
@@ -113,8 +118,9 @@ for (var mediaQuery in rulesByMediaQuery) {
     }
 }
 
+
 // Loop on each asked file, and write it
-for (var mediaQuery in outputFiles) {
+for (mediaQuery in outputFiles) {
     makeCssFromRules(outputFiles[mediaQuery].fileName,
                      outputFiles[mediaQuery].rules,
                      mediaQuery);
