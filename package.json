@@ -2,6 +2,13 @@
   "name": "media-query-extractor",
   "version": "0.1.0",
   "description": "Groups css rules by media queries and extracts them to different files",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stol/media-query-extractor"
+  },
+  "bin": {
+    "media-query-extractor": "./bin/media-query-extractor"
+  },
   "main": "./bin",
   "dependencies": {
     "css-parse": "~2.0.0",
@@ -18,3 +25,6 @@
   "author": "Stol",
   "license": "ISC"
 }
+
+
+https://github.com/stol/media-query-extractor
