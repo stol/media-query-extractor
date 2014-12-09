@@ -26,7 +26,8 @@ p { padding: 10px 0; }
 ```bash
 media-query-extractor  style.css remaining.css
 ```
-procudes : 
+
+**outputs:**
 
 ```css
 a { text-decoration: underline; }
@@ -52,7 +53,7 @@ $ media-query-extractor \
     style.css remaining.css
 ```
 
-produces :
+**outputs:**
 
 ```css
 /* remaining.css */
@@ -82,7 +83,7 @@ $ media-query-extractor \
     style.css remaining.css
 ```
 
-produces : 
+**outputs:**
 
 ```css
 /* remaining.css */
