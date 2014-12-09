@@ -8,6 +8,14 @@ Using this tool will change the position of the css rules in your files. So if y
 
 This tool can only be used when you master your css files, using the right methodology (BEM), with low specificity.
 
+
+## Install
+
+```bash
+npm install media-query-extractor    # for module export
+npm install -g media-query-extractor # globally for command line
+```
+
 ## Example
 
 ```css
