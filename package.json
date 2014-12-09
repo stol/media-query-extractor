@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Groups css rules by media queries and extracts them to different files",
   "main": "index.js",
+  "bin": {
+    "media-query-extractor": "./bin/media-query-extractor"
+  },
   "dependencies": {
     "css": "^2.1.0",
     "css-parse": "^2.0.0",
