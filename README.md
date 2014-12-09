@@ -2,6 +2,12 @@
 
 Groups css rules by media queries and extracts them to different files
 
+## Warning
+
+Using this tool will change the position of the css rules in your files. So if you rely on properties overwriting, it will mess your styles. 
+
+This tool can only be used when you master your css files, using the right methodology (BEM), with low specificity.
+
 ## Example
 
 ```css
@@ -102,3 +108,25 @@ p { padding: 10px 0;}
   p { padding: 20px 0; }
 }
 ```
+
+## Usage
+
+```bash
+Usage: media-query-extractor [options] <input file> <output file>
+
+  Options:
+
+    -h, --help        Output usage information
+    -V, --version     Output the version number
+    -b, --breakpoint  Add a breakpoint to be extracted. Model: --breakpoint "media query string[|output file name]"
+
+  Example:
+
+    $ media-query-extractor --help
+    $ media-query-extractor \
+        --breakpoint "screen and (min-width: 480px)|tablet.css" \
+        --breakpoint "screen and (min-width: 660px)|big-tablet.css" \
+        --breakpoint "screen and (min-width: 990px)|desktop.css" \
+        styles.css remaining.css
+```
+
