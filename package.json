@@ -1,6 +1,6 @@
 {
   "name": "media-query-extractor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Groups css rules by media queries and extracts them to different files",
   "main": "./src/media-query-extractor.js",
   "bin": {

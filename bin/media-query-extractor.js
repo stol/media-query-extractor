@@ -7,7 +7,7 @@ var minimist   = require('minimist'),
 var argv = minimist(process.argv.slice(2));
 
 if (argv.V || argv.version){
-    console.log('0.1.0');
+    console.log('0.1.1');
     process.exit(0);
 }
 
