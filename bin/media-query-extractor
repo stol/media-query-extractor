@@ -1,0 +1,150 @@
+#!/usr/bin/env node
+
+var parse      = require('css-parse'),
+    stringify  = require('css-stringify'),
+    fs         = require('fs'),
+    util       = require('util'),
+    minimist   = require('minimist'),
+;
+
+// Parse command line arguments
+var argv = minimist(process.argv.slice(2));
+
+if (argv.V || argv.version){
+    console.log('0.1.0');
+    process.exit(0);
+}
+
+if (argv.help || argv.h){
+    console.log('  Usage: media-query-extractor [options] <file>');
+    console.log('');
+    console.log('  Options:');
+    console.log('');
+    console.log('    -h, --help        output usage information');
+    console.log('    -V, --version     output the version number');
+    console.log('    -b, --breakpoint  Add a breakpoint to be extracted. Model: --breakpoint "media query string[|output file name]"');
+    console.log('');
+    console.log('  Example:');
+    console.log('');
+    console.log('    $ media-query-extractor --help');
+    console.log('    $ media-query-extractor \\');
+    console.log('        --breakpoint "screen and (min-width: 480px)|tablet.css" \\');
+    console.log('        --breakpoint "screen and (min-width: 660px)|big-tablet.css" \\');
+    console.log('        --breakpoint "screen and (min-width: 990px)|desktop.css" \\');
+    console.log('        styles.css');
+    console.log('');
+    process.exit(0);
+}
+
+// Normalize breakpoints & output file names
+var outputFiles = {
+    'all': {
+        fileName: 'all.css',    
+        rules: []
+    }
+};
+if (argv.breakpoint || argv.b){
+    for( var i=0; i<argv.breakpoint.length; i++) {
+
+        var parts = argv.breakpoint[i].split('|');
+
+        if (parts.length === 2) {
+            outputFiles[parts[0]] = {
+                fileName   : parts[1],
+                rules      : []
+            };
+        }
+        else {
+            outputFiles[parts[0]] = {
+                fileName   : parts[0] + ".css",
+                rules      : []
+            };
+        }
+    }
+}
+
+// Read css input file
+var inputFileName = argv._[0];
+var css = fs.readFileSync(inputFileName, {
+    encoding: "utf8"
+});
+
+var tree = parse(css);
+var rulesByMediaQuery = {};
+var rulesOfMediaQuery;
+
+for( var i=0; i<tree.stylesheet.rules.length; i++) {
+    var rule = tree.stylesheet.rules[i];
+
+    if (rule.type === 'media') {
+        rulesByMediaQuery[rule.media] = rulesByMediaQuery[rule.media] || [];
+        rulesOfMediaQuery = rulesByMediaQuery[rule.media];
+        
+        rulesOfMediaQuery.push.apply(rulesOfMediaQuery, rule.rules);
+    }
+    else{
+        rulesByMediaQuery['all'] = rulesByMediaQuery['all'] || [];
+        rulesOfMediaQuery = rulesByMediaQuery['all'];
+        rulesOfMediaQuery.push(rule);
+    }
+}
+
+// Now that all the rules are grouped by media query, let's check if we have to
+// dispatch to different files
+for (var mediaQuery in rulesByMediaQuery) {
+    // This media query doesn't need to be watched ? We should add this media
+    // query rules to global file
+    if (!outputFiles[mediaQuery]){
+        if (mediaQuery === 'all'){
+            outputFiles['all'].rules.push.apply(outputFiles['all'].rules,
+                                                rulesByMediaQuery[mediaQuery]);
+        }
+        else{
+            outputFiles['all'].rules.push({
+                type: "media",
+                media: mediaQuery,
+                rules: rulesByMediaQuery[mediaQuery],
+            });
+        }
+    }
+    else{
+        outputFiles[mediaQuery].rules.push.apply(outputFiles[mediaQuery].rules,
+                                                 rulesByMediaQuery[mediaQuery]);        
+    }
+}
+
+// Loop on each asked file, and write it
+for (var mediaQuery in outputFiles) {
+    makeCssFromRules(outputFiles[mediaQuery].fileName,
+                     outputFiles[mediaQuery].rules,
+                     mediaQuery);
+}
+
+
+function makeCssFromRules(fileName, rules, mediaQuery) {
+
+    // Compose the css tree to be stringified
+    var tree = {
+        type: "stylesheet",
+        stylesheet: {
+            rules: []
+        }
+    };
+
+    // Global file ?
+    if (mediaQuery === 'all') {
+        tree.stylesheet.rules = rules;
+    }
+    // Or spécific file ?
+    else{
+        tree.stylesheet.rules.push({
+            type: "media",
+            media: mediaQuery,
+            rules: rules,
+        });
+    }
+
+    fs.writeFileSync(fileName, stringify(tree));
+}
+
+process.exit(0);

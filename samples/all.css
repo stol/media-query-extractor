@@ -1,0 +1,31 @@
+html {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+[class~="grid"] {
+  display: block;
+}
+
+[class~="grid"] + [class~="grid"] {
+  margin-top: 0;
+}
+
+[class~="grid"] > .grid__item {
+  display: inline-block;
+  vertical-align: top;
+  width: 100%;
+  direction: ltr;
+  text-align: left;
+}

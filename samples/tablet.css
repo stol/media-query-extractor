@@ -1,0 +1,17 @@
+@media screen and (min-width: 480px) {
+  [class~="grid@tablet"] {
+    display: block;
+  }
+
+  [class~="grid@tablet"] + [class~="grid@tablet"] {
+    margin-top: 0;
+  }
+
+  [class~="grid@tablet"] > .grid__item {
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+    direction: ltr;
+    text-align: left;
+  }
+}
